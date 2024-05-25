@@ -2,11 +2,11 @@
   "name": "dns-manager-server",
   "version": "1.0.0",
   "description": "A server to manage DNS records using AWS Route 53.",
-  "main": "app.js",
+  "main": "index.js",
   "type": "module",
   "scripts": {
-    "start": "node app.js",
-    "dev": "nodemon app.js"
+    "start": "node index.js",
+    "dev": "nodemon index.js"
   },
   "keywords": [
     "aws",

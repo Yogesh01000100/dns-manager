@@ -3,10 +3,9 @@ import express from 'express';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import mongoose from 'mongoose';
-import { initializeDnsData } from './src/utils/initializeDnsData.js';
-import userRoutes from './src/routes/userRoutes.js';
-import authRoutes from './src/routes/authRoutes.js';
-import dnsRoutes from './src/routes/dnsRoutes.js';
+import userRoutes from './src/routes/userRoute.js'
+import authRoutes from './src/routes/authRoute.js';
+import dnsRoutes from './src/routes/dnsRoute.js';
 
 const app = express();
 app.use(express.json());
@@ -29,14 +28,8 @@ app.get('/', (req, res) => {
 
 async function startServer() {
   try {
-    await mongoose.connect(process.env.MONGO_URI);
+    await mongoose.connect(process.env.DATABASE_URL);
     console.log('Connected to MongoDB');
-
-    if (process.env.RUN_INIT === 'true') {
-      await initializeDnsData();
-      console.log('DNS data initialization completed successfully.');
-    }
-
     const PORT = process.env.PORT || 3000;
     app.listen(PORT, () => {
       console.log(`Server is running on port ${PORT}`);
