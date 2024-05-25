@@ -1,79 +1,63 @@
-import { DnsRecord, HostedZone, User } from '../models';
+import { route53 } from "../config/aws-config.js";
+import { HostedZone } from "../models/HostedZone.js";
 
-// Fetch DNS records for a specific user
-export async function fetchUserDnsRecords(req, res) {
-    const { userId } = req.params;
+// adds the domain to route53 service
+export const createDomain = async (req, res) => {
+  const { domainName } = req.body;
+  const params = {
+    Name: domainName,
+    CallerReference: Date.now().toString(),
+  };
 
-    try {
-        const userRecords = await DnsRecord.find({ userId });
-        res.status(200).json(userRecords);
-    } catch (error) {
-        res.status(500).send(`Error fetching DNS records for user: ${error}`);
+  try {
+    const data = await route53.createHostedZone(params).promise();
+
+    const newHostedZone = new HostedZone({
+      zoneId: data.HostedZone.Id,
+      name: data.HostedZone.Name,
+      callerReference: data.HostedZone.CallerReference,
+      config: {
+        comment: data.HostedZone.Config.Comment,
+        privateZone: data.HostedZone.Config.PrivateZone,
+      },
+    });
+    await newHostedZone.save();
+
+    res.status(201).json({ message: "Domain created successfully", data });
+  } catch (error) {
+    console.error("Failed to create domain:", error);
+    res.status(500).json({ error: error.toString() });
+  }
+};
+
+// lists the user domains
+export const listHostedZones = async (req, res) => {
+  try {
+    let hostedZones = await HostedZone.find({});
+    if (hostedZones.length > 0) {
+      return res.status(200).json({ hostedZones });
     }
-}
+    const awsHostedZones = await route53.listHostedZones().promise();
+    hostedZones = await HostedZone.insertMany(
+      awsHostedZones.HostedZones.map((zone) => {
+        const ZoneId = zone.Id.split("/").pop();
 
-// Add a DNS record for a user
-export async function addUserDnsRecord(req, res) {
-    const { userId } = req.params;
-    const { name, type, ttl, values, zoneId } = req.body;
+        return {
+          zoneId: ZoneId,
+          name: zone.Name,
+          callerReference: zone.CallerReference,
+          config: {
+            comment: zone.Config.Comment,
+            privateZone: zone.Config.PrivateZone,
+          },
+          recordSetCount: zone.ResourceRecordSetCount,
+        };
+      })
+    );
 
-    try {
-        const user = await User.findById(userId);
-        if (!user) {
-            return res.status(404).send('User not found');
-        }
-
-        const newRecord = new DnsRecord({
-            name,
-            type,
-            ttl,
-            resourceRecords: values.map(value => ({ value })),
-            userId,
-            zone: zoneId
-        });
-
-        await newRecord.save();
-        res.status(201).json(newRecord);
-    } catch (error) {
-        res.status(500).send(`Error adding DNS record: ${error}`);
-    }
-}
-
-// Update a DNS record
-export async function updateDnsRecord(req, res) {
-    const { recordId } = req.params;
-    const { name, type, ttl, values } = req.body;
-
-    try {
-        const updatedRecord = await DnsRecord.findByIdAndUpdate(recordId, {
-            name,
-            type,
-            ttl,
-            resourceRecords: values.map(value => ({ value }))
-        }, { new: true });
-
-        if (!updatedRecord) {
-            return res.status(404).send('DNS Record not found');
-        }
-
-        res.status(200).json(updatedRecord);
-    } catch (error) {
-        res.status(500).send(`Error updating DNS record: ${error}`);
-    }
-}
-
-// Delete a DNS record
-export async function deleteDnsRecord(req, res) {
-    const { recordId } = req.params;
-
-    try {
-        const deletedRecord = await DnsRecord.findByIdAndDelete(recordId);
-        if (!deletedRecord) {
-            return res.status(404).send('DNS Record not found');
-        }
-
-        res.status(200).send('DNS Record deleted successfully');
-    } catch (error) {
-        res.status(500).send(`Error deleting DNS record: ${error}`);
-    }
-}
+    res.status(200).json({ hostedZones });
+  } catch (error) {
+    console.error("Failed to retrieve hosted zones:", error);
+    res.status(500).json({ error: error.toString() });
+  }
+};
