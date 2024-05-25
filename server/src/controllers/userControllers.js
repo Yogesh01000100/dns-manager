@@ -13,13 +13,14 @@ export const createDomain = async (req, res) => {
     const data = await route53.createHostedZone(params).promise();
 
     const newHostedZone = new HostedZone({
-      zoneId: data.HostedZone.Id,
-      name: data.HostedZone.Name,
-      callerReference: data.HostedZone.CallerReference,
+      Id: data.HostedZone.Id,
+      Name: data.HostedZone.Name,
+      CallerReference: data.HostedZone.CallerReference,
       config: {
-        comment: data.HostedZone.Config.Comment,
-        privateZone: data.HostedZone.Config.PrivateZone,
+        Comment: data.HostedZone.Config.Comment,
+        PrivateZone: data.HostedZone.Config.PrivateZone,
       },
+      ResourceRecordSetCount: data.HostedZone.ResourceRecordSetCount,
     });
     await newHostedZone.save();
 
@@ -40,17 +41,17 @@ export const listHostedZones = async (req, res) => {
     const awsHostedZones = await route53.listHostedZones().promise();
     hostedZones = await HostedZone.insertMany(
       awsHostedZones.HostedZones.map((zone) => {
-        const ZoneId = zone.Id.split("/").pop();
+        const Id = zone.Id.split("/").pop();
 
         return {
-          zoneId: ZoneId,
-          name: zone.Name,
-          callerReference: zone.CallerReference,
-          config: {
-            comment: zone.Config.Comment,
-            privateZone: zone.Config.PrivateZone,
+          Id: Id,
+          Name: zone.Name,
+          CallerReference: zone.CallerReference,
+          Config: {
+            Comment: zone.Config.Comment,
+            PrivateZone: zone.Config.PrivateZone,
           },
-          recordSetCount: zone.ResourceRecordSetCount,
+          ResourceRecordSetCount: zone.ResourceRecordSetCount,
         };
       })
     );

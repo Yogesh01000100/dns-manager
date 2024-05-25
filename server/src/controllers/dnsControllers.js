@@ -12,10 +12,10 @@ export const getRecords = async (req, res) => {
       const data = await route53.listResourceRecordSets(params).promise();
       for (const record of data.ResourceRecordSets) {
         const newRecord = new DnsRecord({
-          name: record.Name,
-          type: record.Type,
-          ttl: record.TTL,
-          resourceRecords: record.ResourceRecords.map((r) => ({
+          Name: record.Name,
+          Type: record.Type,
+          TTL: record.TTL,
+          ResourceRecords: record.ResourceRecords.map((r) => ({
             value: r.Value,
           })),
           zone: zoneId,

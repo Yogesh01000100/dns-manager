@@ -1,14 +1,14 @@
 import mongoose from 'mongoose';
 
 const hostedZoneSchema = new mongoose.Schema({
-  zoneId: { type: String, required: true, unique: true },
-  name: { type: String, required: true },
-  callerReference: String,
-  config: {
-    comment: String,
-    privateZone: Boolean
+  Id: { type: String, required: true, unique: true },
+  Name: { type: String, required: true },
+  CallerReference: String,
+  Config: {
+    Comment: String,
+    PrivateZone: Boolean
   },
-  recordSetCount: Number,
+  ResourceRecordSetCount: Number,
   records: [{ type: mongoose.Schema.Types.ObjectId, ref: 'DnsRecord' }]
 });
 
