@@ -1,6 +1,6 @@
 import { admin } from "../config/firebase-config.js";
 
-export async function verifySession(req, res, next) {
+export const verifySession=async(req, res, next)=> {
     const sessionCookie = req.cookies.session || '';
     try {
         if (!sessionCookie) {
