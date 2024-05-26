@@ -16,6 +16,7 @@ import {
 import MenuIcon from "@mui/icons-material/Menu";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import SearchIcon from "@mui/icons-material/Search";
+import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { alpha, styled } from "@mui/material/styles";
 import { Dashboard, Settings, Help, ExitToApp } from "@mui/icons-material";
@@ -93,7 +94,7 @@ export default function Header({ toggleSidebar }) {
     >
       <div className="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8 flex flex-row items-center">
         <IconButton
-          onClick={toggleSidebar}
+          onClick={handleMenuClick}
           sx={{ color: "white", display: { xs: "block", md: "none" } }}
         >
           <MenuIcon />
@@ -120,7 +121,7 @@ export default function Header({ toggleSidebar }) {
                 display: "block",
                 position: "absolute",
                 top: 0,
-                right: 14,
+                left: 14,
                 width: 10,
                 height: 10,
                 bgcolor: "background.paper",
@@ -130,31 +131,19 @@ export default function Header({ toggleSidebar }) {
             },
           }}
         >
-          <MenuItem
-            onClick={() => {
-              /* Navigate to Dashboard */
-            }}
-          >
+          <MenuItem component={Link} to="/home">
             <ListItemIcon>
               <Dashboard fontSize="small" />
             </ListItemIcon>
-            <ListItemText>Dashboard</ListItemText>
+            <ListItemText>Domains</ListItemText>
           </MenuItem>
-          <MenuItem
-            onClick={() => {
-              /* Navigate to Settings */
-            }}
-          >
+          <MenuItem component={Link} to="/settings">
             <ListItemIcon>
               <Settings fontSize="small" />
             </ListItemIcon>
             <ListItemText>Settings</ListItemText>
           </MenuItem>
-          <MenuItem
-            onClick={() => {
-              /* Navigate to Help */
-            }}
-          >
+          <MenuItem component={Link} to="/help">
             <ListItemIcon>
               <Help fontSize="small" />
             </ListItemIcon>
@@ -221,9 +210,7 @@ export default function Header({ toggleSidebar }) {
             disableRestoreFocus
           >
             <Card variant="outlined" sx={{ width: 165, height: 75 }}>
-              {" "}
               <CardContent sx={{ padding: "8px" }}>
-                {" "}
                 <div style={{ fontWeight: "bold", fontSize: "0.85rem" }}>
                   Account
                 </div>

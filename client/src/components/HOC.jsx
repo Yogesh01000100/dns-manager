@@ -78,7 +78,7 @@ const withAuth = (Component) => {
             toggleMobileMenu={toggleMobileMenu}
           />
           <div className="bg-slate-200 min-h-screen">
-            <main className="flex-grow p-3">
+            <main className="flex-grow">
               <div className="max-w-6xl mx-auto">
                 <Component {...props} />
               </div>

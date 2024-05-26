@@ -140,7 +140,7 @@ function Dashboard() {
 
   return (
     <Box sx={{ p: 4 }}>
-      <Paper elevation={3} sx={{ p: 3, mb: 4, borderRadius: 3, minWidth: 335 }}>
+      <Paper elevation={3} sx={{ p: 3, mb: 4, borderRadius: 3, minWidth: 330 }}>
         <Box mb={3}>
           <Typography variant="h6" fontWeight="bold" gutterBottom>
             Manage Records
@@ -170,7 +170,7 @@ function Dashboard() {
       <TableContainer
         component={Paper}
         elevation={3}
-        sx={{ borderRadius: 3, minWidth: 335 }}
+        sx={{ borderRadius: 3, minWidth: 330 }}
       >
         <Table aria-label="records table">
           <TableHead>

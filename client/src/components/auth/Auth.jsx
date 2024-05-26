@@ -143,7 +143,7 @@ function Auth() {
   }
 
   return (
-    <div className="font-roboto flex items-center justify-center h-screen bg-blue-300 p-10 mx-auto">
+    <div className="font-roboto flex items-center justify-center h-screen bg-blue-300 p-8 mx-auto">
       <div className="bg-white rounded-xl shadow-md p-4 md:w-3/4 w-full max-w-4xl mx-auto flex">
         <div className="hidden lg:flex w-1/2 items-center justify-center rounded-l-xl">
           <img
