@@ -5,7 +5,7 @@ import {
   updateRecord,
   deleteRecord,
 } from "../controllers/dnsControllers.js";
-import { verifySession } from "../middlewares/authMiddleware.js";
+import { verifySession } from "../middlewares/auth.js";
 import { validate } from "../middlewares/validationMiddleware.js";
 import {
   recordSchema,
