@@ -1,5 +1,6 @@
 import { route53 } from "../config/aws-config.js";
 import { HostedZone } from "../models/HostedZone.js";
+import { DnsRecord } from "../models/DnsRecord.js";
 
 // adds the domain to route53 service
 export const createDomain = async (req, res) => {
@@ -11,22 +12,42 @@ export const createDomain = async (req, res) => {
 
   try {
     const data = await route53.createHostedZone(params).promise();
+    const hostedZoneId = data.HostedZone.Id.split("/").pop();
 
     const newHostedZone = new HostedZone({
-      Id: data.HostedZone.Id,
+      Id: hostedZoneId,
       Name: data.HostedZone.Name,
       CallerReference: data.HostedZone.CallerReference,
-      config: {
+      Config: {
         Comment: data.HostedZone.Config.Comment,
         PrivateZone: data.HostedZone.Config.PrivateZone,
       },
       ResourceRecordSetCount: data.HostedZone.ResourceRecordSetCount,
     });
-    await newHostedZone.save();
 
+    await newHostedZone.save();
     res.status(201).json({ message: "Domain created successfully", data });
   } catch (error) {
     console.error("Failed to create domain:", error);
+    res.status(500).json({ error: error.toString() });
+  }
+};
+
+// delete domain
+export const deleteDomain = async (req, res) => {
+  console.log(req.body);
+  const { Id } = req.body;
+  const params = {
+    Id: Id,
+  };
+
+  try {
+    const data = await route53.deleteHostedZone(params).promise();
+    await HostedZone.deleteOne({ Id: Id });
+    await DnsRecord.deleteMany({ zone: Id });
+    res.status(200).json({ message: "Domain deleted successfully", data });
+  } catch (error) {
+    console.error("Failed to delete domain:", error);
     res.status(500).json({ error: error.toString() });
   }
 };

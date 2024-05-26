@@ -152,7 +152,7 @@ function Dashboard() {
               fontSize: {
                 xs: "0.7rem",
                 sm: "0.8rem",
-                md: "0.875rem",
+                md: "0.79rem",
               },
             }}
           >
@@ -214,7 +214,7 @@ function Dashboard() {
                 sx={{
                   textAlign: "center",
                   padding: "8px 16px",
-                 
+
                   borderTopRightRadius: 10,
                 }}
               >
@@ -224,7 +224,7 @@ function Dashboard() {
                 sx={{
                   textAlign: "center",
                   padding: "8px 16px",
-                
+
                   borderTopRightRadius: 10,
                 }}
               >
@@ -242,11 +242,14 @@ function Dashboard() {
                   <TableCell>
                     <Skeleton variant="text" />
                   </TableCell>
-                  <TableCell>
+                  <TableCell align="center">
                     <Skeleton variant="text" />
                   </TableCell>
-                  <TableCell align="center">
-                    <Skeleton variant="rectangular" width={100} height={32} />
+                  <TableCell align="right" colSpan={2}>
+                    <Box display="flex" justifyContent="flex-end" gap={2}>
+                      <Skeleton variant="rectangular" width={100} height={32} />
+                      <Skeleton variant="rectangular" width={100} height={32} />
+                    </Box>
                   </TableCell>
                 </TableRow>
               ))
@@ -257,9 +260,9 @@ function Dashboard() {
                     sx={{
                       textAlign: "center",
                       fontSize: {
-                        xs: "0.75rem",
+                        xs: "0.7rem",
                         sm: "0.8rem",
-                        md: "0.875rem",
+                        md: "0.9rem",
                       },
                     }}
                   >
@@ -269,9 +272,9 @@ function Dashboard() {
                     sx={{
                       textAlign: "center",
                       fontSize: {
-                        xs: "0.75rem",
+                        xs: "0.7rem",
                         sm: "0.8rem",
-                        md: "0.875rem",
+                        md: "0.9rem",
                       },
                     }}
                   >
@@ -281,9 +284,9 @@ function Dashboard() {
                     sx={{
                       textAlign: "center",
                       fontSize: {
-                        xs: "0.75rem",
+                        xs: "0.7rem",
                         sm: "0.8rem",
-                        md: "0.875rem",
+                        md: "0.9rem",
                       },
                     }}
                   >
@@ -299,11 +302,13 @@ function Dashboard() {
                     <Button
                       startIcon={<EditIcon />}
                       onClick={() => handleEditClick(record)}
-                      sx={{ fontSize: {
-                        xs: '0rem', 
-                        sm: '0rem', 
-                        md: '0.875rem'
-                      }}}
+                      sx={{
+                        fontSize: {
+                          xs: "0rem",
+                          sm: "0rem",
+                          md: "0.875rem",
+                        },
+                      }}
                     >
                       Edit
                     </Button>
@@ -311,11 +316,13 @@ function Dashboard() {
                       startIcon={<DeleteIcon />}
                       color="error"
                       onClick={() => handleOpenDeleteDialog(record)}
-                      sx={{ fontSize: {
-                        xs: '0rem', 
-                        sm: '0rem', 
-                        md: '0.875rem'
-                      }}}
+                      sx={{
+                        fontSize: {
+                          xs: "0rem",
+                          sm: "0rem",
+                          md: "0.875rem",
+                        },
+                      }}
                     >
                       Delete
                     </Button>

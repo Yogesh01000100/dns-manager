@@ -52,7 +52,6 @@ export const fetchRecords = async (domainId) => {
 };
 
 export const updateRecord = async (updatedRecord) => {
-    
   try {
     const response = await axios.put(
       `${API_URL}/dns/update-record`,
@@ -67,7 +66,7 @@ export const updateRecord = async (updatedRecord) => {
     if (response.status === 200) {
       toast.success("Record updated successfully!");
       return true;
-    }else {
+    } else {
       console.error("Failed to update record:", response.data);
       toast.error("Failed to update record!");
       return false;
@@ -81,13 +80,10 @@ export const updateRecord = async (updatedRecord) => {
 
 export const deleteRecord = async (recordId, zoneId) => {
   try {
-    const response = await axios.delete(
-      `${API_URL}/dns/delete-record`,
-      {
-        data: { recordId, zoneId },
-        withCredentials: true,
-      }
-    );
+    const response = await axios.delete(`${API_URL}/dns/delete-record`, {
+      data: { recordId, zoneId },
+      withCredentials: true,
+    });
     if (response.status === 200) {
       toast.success("Record deleted successfully!");
       return true;
@@ -105,12 +101,9 @@ export const deleteRecord = async (recordId, zoneId) => {
 
 export const fetchDomains = async () => {
   try {
-    const response = await axios.get(
-      `${API_URL}/user/hosted-zones`,
-      {
-        withCredentials: true,
-      }
-    );
+    const response = await axios.get(`${API_URL}/user/hosted-zones`, {
+      withCredentials: true,
+    });
     if (response.status === 200) {
       return response.data.hostedZones;
     } else {
@@ -121,5 +114,56 @@ export const fetchDomains = async () => {
     console.error("Error fetching records:", error.response);
     toast.error("Failed to Domains records");
     return null;
+  }
+};
+
+export const createDomain = async (domainName) => {
+  try {
+    const response = await axios.post(
+      `${API_URL}/user/create-domain`,
+      { domainName },
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        withCredentials: true,
+      }
+    );
+    if (response.status === 201) {
+      toast.success("Domain Added successfully!");
+      return true;
+    } else {
+      console.error("Failed to create domain:", response.data);
+      toast.error("Failed to create domain!");
+      return false;
+    }
+  } catch (error) {
+    console.error("Error creating domain:", error.response);
+    toast.error("Something went wrong while creating the domain!");
+    return false;
+  }
+};
+
+export const deleteDomain = async (Id) => {
+  try {
+    const response = await axios.delete(
+      `${API_URL}/user/delete-hosted-zone/`,
+      {
+        data: { Id },
+        withCredentials: true,
+      }
+    );
+    if (response.status === 200) {
+      toast.success("Domain deleted successfully!");
+      return true;
+    } else {
+      console.error("Failed to delete domain:", response.data);
+      toast.error("Failed to delete domain!");
+      return false;
+    }
+  } catch (error) {
+    console.error("Error deleting domain:", error.response);
+    toast.error("Failed to delete the domain!");
+    return false;
   }
 };

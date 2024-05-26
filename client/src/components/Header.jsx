@@ -149,7 +149,7 @@ export default function Header({ toggleSidebar }) {
             </ListItemIcon>
             <ListItemText>Help</ListItemText>
           </MenuItem>
-          <MenuItem onClick={handleLogout}>
+          <MenuItem onClick={handleLogout} component={Link} to="/user/auth">
             <ListItemIcon>
               <ExitToApp fontSize="small" />
             </ListItemIcon>
