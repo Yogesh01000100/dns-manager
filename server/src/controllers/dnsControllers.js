@@ -1,5 +1,51 @@
 import { route53 } from "../config/aws-config.js";
 import { DnsRecord } from "../models/DnsRecord.js";
+import { HostedZone } from "../models/HostedZone.js";
+
+export const createRecord = async (req, res) => {
+  const { name, type, value, ttl, zoneId } = req.body;
+  const params = {
+    HostedZoneId: zoneId,
+    ChangeBatch: {
+      Changes: [
+        {
+          Action: "CREATE",
+          ResourceRecordSet: {
+            Name: name,
+            Type: type,
+            TTL: ttl,
+            ResourceRecords: [{ Value: value }],
+          },
+        },
+      ],
+    },
+  };
+
+  try {
+    const data = await route53.changeResourceRecordSets(params).promise();
+    if (data.ChangeInfo.Status === "PENDING") {
+      const newRecord = new DnsRecord({
+        Name: name,
+        Type: type,
+        TTL: ttl,
+        ResourceRecords: [{ value: value }],
+        zone: zoneId,
+      });
+      await newRecord.save();
+      await HostedZone.findOneAndUpdate(
+        { Id: zoneId },
+        { $inc: { ResourceRecordSetCount: 1 } },
+        { new: true }
+      );
+      res.status(201).json({
+        message: "Record created successfully",
+        data: data.ChangeInfo,
+      });
+    }
+  } catch (error) {
+    res.status(500).json({ error: error.toString() });
+  }
+};
 
 export const getRecords = async (req, res) => {
   const zoneId = req.query.zoneId;
@@ -29,48 +75,13 @@ export const getRecords = async (req, res) => {
   }
 };
 
-export const createRecord = async (req, res) => {
-  const { name, type, value, ttl, zoneId } = req.body;
+export const updateRecord = async (req, res) => {
+  const { recordId, name, type, values, ttl, zoneId } = req.body;
+
+  const resourceRecords = Array.isArray(values) ? values : [values];
+
   const params = {
     HostedZoneId: zoneId,
-    ChangeBatch: {
-      Changes: [
-        {
-          Action: "CREATE",
-          ResourceRecordSet: {
-            Name: name,
-            Type: type,
-            TTL: ttl,
-            ResourceRecords: [{ Value: value }],
-          },
-        },
-      ],
-    },
-  };
-
-  try {
-    const data = await route53.changeResourceRecordSets(params).promise();
-    // next save to mongodb
-    const newRecord = new DnsRecord({
-      name,
-      type,
-      ttl,
-      resourceRecords: [{ value }],
-      zone: zoneId,
-    });
-    await newRecord.save();
-    res
-      .status(201)
-      .json({ message: "Record created successfully", data: data.ChangeInfo });
-  } catch (error) {
-    res.status(500).json({ error: error.toString() });
-  }
-};
-
-export const updateRecord = async (req, res) => {
-  const { recordId, name, type, value, ttl } = req.body;
-  const params = {
-    HostedZoneId: req.body.zoneId,
     ChangeBatch: {
       Changes: [
         {
@@ -79,7 +90,7 @@ export const updateRecord = async (req, res) => {
             Name: name,
             Type: type,
             TTL: ttl,
-            ResourceRecords: [{ Value: value }],
+            ResourceRecords: resourceRecords.map((value) => ({ Value: value })),
           },
         },
       ],
@@ -88,72 +99,68 @@ export const updateRecord = async (req, res) => {
 
   try {
     const data = await route53.changeResourceRecordSets(params).promise();
-    await DnsRecord.findByIdAndUpdate(
+    const updatedRecord = await DnsRecord.findByIdAndUpdate(
       recordId,
       {
-        name,
-        type,
-        ttl,
-        resourceRecords: [{ value }],
+        Name: name,
+        Type: type,
+        TTL: ttl,
+        ResourceRecords: resourceRecords.map((value) => ({ value })),
       },
       { new: true }
     );
-    res.json({ message: "Record updated successfully", data: data.ChangeInfo });
+
+    if (updatedRecord) {
+      res.status(200).json({
+        message: "Record updated successfully",
+        data: data.ChangeInfo,
+      });
+    } else {
+      throw new Error("No corresponding local record found");
+    }
   } catch (error) {
     res.status(500).json({ error: error.toString() });
   }
 };
 
 export const deleteRecord = async (req, res) => {
-  const { recordId } = req.params;
-  const params = {
-    HostedZoneId: req.body.zoneId,
-    ChangeBatch: {
-      Changes: [
-        {
-          Action: "DELETE",
-          ResourceRecordSet: {
-            Name: req.body.name,
-            Type: req.body.type,
-            TTL: req.body.ttl,
-            ResourceRecords: [{ Value: req.body.value }],
+  const { recordId, zoneId } = req.body;
+
+  try {
+    const record = await DnsRecord.findById(recordId);
+    if (!record) {
+      return res.status(404).json({ message: "Record not found" });
+    }
+
+    const params = {
+      HostedZoneId: zoneId,
+      ChangeBatch: {
+        Changes: [
+          {
+            Action: "DELETE",
+            ResourceRecordSet: {
+              Name: record.Name,
+              Type: record.Type,
+              TTL: record.TTL,
+              ResourceRecords: record.ResourceRecords.map((r) => ({
+                Value: r.value,
+              })),
+            },
           },
-        },
-      ],
-    },
-  };
+        ],
+      },
+    };
 
-  try {
     const data = await route53.changeResourceRecordSets(params).promise();
-    await DnsRecord.findByIdAndRemove(recordId);
-    res.json({ message: "Record deleted successfully", data: data.ChangeInfo });
-  } catch (error) {
-    res.status(500).json({ error: error.toString() });
-  }
-};
+    await DnsRecord.findByIdAndDelete(recordId);
+    await HostedZone.findOneAndUpdate(
+      { Id: zoneId },
+      { $inc: { ResourceRecordSetCount: -1 } }
+    );
 
-export const listHostedZones = async (req, res) => {
-  try {
-    const data = await route53.listHostedZones().promise();
-    res.status(200).json({ hostedZones: data.HostedZones });
-  } catch (error) {
-    console.error("Failed to retrieve hosted zones:", error);
-    res.status(500).json({ error: error.toString() });
-  }
-};
-
-export const createDomain = async (req, res) => {
-  const { domainName } = req.body;
-  const params = {
-    Name: domainName,
-    CallerReference: Date.now().toString(),
-  };
-
-  try {
-    const data = await route53.createHostedZone(params).promise();
     res
-      .status(201)
-      .json({ message: "Domain created successfully", data: data });
+      .status(200)
+      .json({ message: "Record deleted successfully", data: data.ChangeInfo });
   } catch (error) {
     res.status(500).json({ error: error.toString() });
   }

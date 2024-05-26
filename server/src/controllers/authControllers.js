@@ -13,8 +13,8 @@ export const createSessionCookie = async (req, res) => {
         maxAge: expiresIn,
         httpOnly: true,
         path: "/",
-        /*secure: true, 
-        sameSite: 'None',*/
+        secure: true, 
+        sameSite: 'None',
       };
 
       res.cookie("session", sessionCookie, options);
@@ -63,8 +63,8 @@ export const sessionLogout = async (req, res) => {
     maxAge: expiresIn,
     httpOnly: true,
     path: "/",
-    /*secure: true, 
-    sameSite: 'None',*/
+    secure: true, 
+    sameSite: 'None',
   };
   res.cookie("session", token, options);
   console.log("Cookie set with options:", options);

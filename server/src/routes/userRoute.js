@@ -6,7 +6,7 @@ import {
 
 const router = express.Router();
 
-router.get("/hosted-zones", listHostedZones); 
+router.get("/hosted-zones", listHostedZones);  // #
 router.post("/create-domain", createDomain);
 
 export default router;
