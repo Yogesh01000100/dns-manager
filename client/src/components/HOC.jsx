@@ -17,19 +17,17 @@ const withAuth = (Component) => {
     useEffect(() => {
       let active = true;
       let toastShown = false;
-    
+
       const clearSession = () => {
         localStorage.removeItem("wasLoggedIn");
         sessionStorage.removeItem("Logout");
         localStorage.removeItem("user");
       };
-    
+
       const verifySession = async () => {
         try {
           const res = await checkCookieSession();
-          //console.log(res)
           if (res && active) {
-            console.log("cookie session:", res.customStatus);
             if (["noSession", "sessionExpired"].includes(res.customStatus) && !toastShown) {
               dispatch(sessionState(false));
               clearSession();
@@ -52,13 +50,12 @@ const withAuth = (Component) => {
           }
         }
       };
-    
+
       verifySession();
       return () => {
         active = false;
       };
     }, [navigate, dispatch]);
-    
 
     const toggleSidebar = () => setSidebarOpen(!isSidebarOpen);
     const toggleMobileMenu = () => setMobileMenuOpen(!isMobileMenuOpen);
@@ -73,7 +70,7 @@ const withAuth = (Component) => {
         />
         <div
           className={`flex flex-col w-full ${
-            isSidebarOpen && !isMobileMenuOpen ? "pl-64" : "pl-20"
+            isSidebarOpen && !isMobileMenuOpen ? "md:pl-64" : "md:pl-20"
           } transition-all duration-300 ease-in-out`}
         >
           <Header

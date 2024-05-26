@@ -9,14 +9,16 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
     const response = await sessionLogout();
     if (response.status === 200) {
       sessionStorage.setItem("Logout", true);
+      localStorage.removeItem("user");
       await auth.signOut();
     }
   };
+
   return (
     <div
       className={`${
         isOpen ? "w-64" : "w-20"
-      } h-full bg-gray-800 text-white fixed transition-width duration-300 ease-in-out flex flex-col justify-between`}
+      } h-full bg-gray-800 text-white fixed transition-width duration-300 ease-in-out flex-col justify-between hidden md:flex`}
     >
       <div>
         <div className="p-5 font-bold text-xl flex justify-between items-center mb-5">
@@ -176,4 +178,5 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
     </div>
   );
 }
+
 export default Sidebar;

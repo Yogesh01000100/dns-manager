@@ -20,7 +20,7 @@ import { useSelector } from "react-redux";
 import { alpha, styled } from "@mui/material/styles";
 import { Dashboard, Settings, Help, ExitToApp } from "@mui/icons-material";
 import auth from "../config/firebase-config";
-import { sessionLogout } from "../services/auth";
+import { sessionLogout } from "../services/auth.js";
 
 const Search = styled("div")(({ theme }) => ({
   position: "relative",
@@ -88,12 +88,12 @@ export default function Header({ toggleSidebar }) {
 
   return (
     <header
-    className="shadow-lg transition-all duration-300 ease-in-out h-15 sm:h-13"
+      className="shadow-lg transition-all duration-300 ease-in-out h-15 sm:h-13"
       style={{ backgroundColor: "#2474dd" }}
     >
       <div className="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8 flex flex-row items-center">
         <IconButton
-          onClick={handleMenuClick}
+          onClick={toggleSidebar}
           sx={{ color: "white", display: { xs: "block", md: "none" } }}
         >
           <MenuIcon />
@@ -132,7 +132,7 @@ export default function Header({ toggleSidebar }) {
         >
           <MenuItem
             onClick={() => {
-              /* Navigate to dashboard */
+              /* Navigate to Dashboard */
             }}
           >
             <ListItemIcon>
@@ -142,7 +142,7 @@ export default function Header({ toggleSidebar }) {
           </MenuItem>
           <MenuItem
             onClick={() => {
-              /* Navigate to settings */
+              /* Navigate to Settings */
             }}
           >
             <ListItemIcon>
@@ -152,7 +152,7 @@ export default function Header({ toggleSidebar }) {
           </MenuItem>
           <MenuItem
             onClick={() => {
-              /* navigate to help */
+              /* Navigate to Help */
             }}
           >
             <ListItemIcon>
@@ -222,7 +222,6 @@ export default function Header({ toggleSidebar }) {
           >
             <Card variant="outlined" sx={{ width: 165, height: 75 }}>
               {" "}
-
               <CardContent sx={{ padding: "8px" }}>
                 {" "}
                 <div style={{ fontWeight: "bold", fontSize: "0.85rem" }}>

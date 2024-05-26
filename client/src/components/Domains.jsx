@@ -34,9 +34,9 @@ function WDomains() {
   };
 
   return (
-    <Box sx={{ margin: 4, minWidth: 427 }}>
+    <Box sx={{ margin: 4, minWidth: 335 }}>
       <TableContainer component={Paper}>
-        <Table sx={{ minWidth: 650 }} aria-label="simple table">
+        <Table aria-label="simple table">
           <TableHead>
             <TableRow>
               <TableCell sx={{ padding: "8px 16px", fontSize: "0.875rem" }}>
