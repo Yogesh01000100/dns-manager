@@ -43,19 +43,28 @@ function Dashboard() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        setIsLoading(true); // Ensure loading state is set
+        setIsLoading(true);
         const data = await fetchRecords(domainId);
-        console.log("Fetched data: ", data);
-        setRecords(data);
+        const normalizedData = normalizeRecords(data);
+        setRecords(normalizedData);
       } catch (error) {
         console.error("Error fetching records: ", error);
         setError(error);
       } finally {
-        setIsLoading(false); // Ensure loading state is unset
+        setIsLoading(false);
       }
     };
     fetchData();
   }, [domainId]);
+
+  const normalizeRecords = (records) => {
+    return records.map((record) => ({
+      ...record,
+      ResourceRecords: record.ResourceRecords.map((rr) => ({
+        value: rr.Value || rr.value,
+      })),
+    }));
+  };
 
   const handleEditClick = (record) => {
     setCurrentRecord(record);
