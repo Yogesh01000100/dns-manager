@@ -32,8 +32,9 @@ function Auth() {
 
   const handleSignIn = async () => {
     try {
-      setLoading({ active: true, type: "email" });
+     
       const result = await signInWithEmailAndPassword(auth, email, password);
+      setLoading({ active: true, type: "email" });
       if (result.user.emailVerified) {
         dispatch(
           login({
@@ -43,13 +44,13 @@ function Auth() {
             photoURL: result.user.photoURL,
           })
         );
-        setLoading({ active: false, type: "" });
         const { idToken } = result._tokenResponse;
         const sessionCreated = await createSession(idToken);
-        if (!sessionCreated) {
-          toast.error("Something went wrong! Please try again");
+        if (sessionCreated) {
+          navigate("/home");
         }
       } else {
+        console.error("Failed to create session!");
         toast.warning("Please verify your email before signing in");
       }
     } catch (error) {
