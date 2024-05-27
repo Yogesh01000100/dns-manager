@@ -38,16 +38,20 @@ function Dashboard() {
   const [anchorEl, setAnchorEl] = useState(null);
   const [selectedType, setSelectedType] = useState("");
   const [recordToDelete, setRecordToDelete] = useState(null);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
+        setIsLoading(true); // Ensure loading state is set
         const data = await fetchRecords(domainId);
+        console.log("Fetched data: ", data);
         setRecords(data);
       } catch (error) {
+        console.error("Error fetching records: ", error);
         setError(error);
       } finally {
-        setIsLoading(false);
+        setIsLoading(false); // Ensure loading state is unset
       }
     };
     fetchData();
@@ -103,12 +107,19 @@ function Dashboard() {
       setDeleteDialogOpen(false);
     } catch (error) {
       console.error("Error deleting record:", error);
+      setError(error);
     }
   };
 
-  const handleAddRecord = (newRecord) => {
-    setRecords((prevRecords) => [...prevRecords, newRecord]);
-    fetchRecords(domainId).then((data) => setRecords(data));
+  const handleAddRecord = async (newRecord) => {
+    try {
+      setRecords((prevRecords) => [...prevRecords, newRecord]);
+      const data = await fetchRecords(domainId);
+      setRecords(data);
+    } catch (error) {
+      console.error("Error adding record:", error);
+      setError(error);
+    }
   };
 
   const handleMenuClick = (event) => {
@@ -140,6 +151,11 @@ function Dashboard() {
 
   return (
     <Box sx={{ p: 4 }}>
+      {error && (
+        <Typography color="error">
+          An error occurred: {error.message}
+        </Typography>
+      )}
       <Paper elevation={3} sx={{ p: 3, mb: 4, borderRadius: 3, minWidth: 330 }}>
         <Box mb={3}>
           <Typography variant="h6" fontWeight="bold" gutterBottom>
@@ -214,7 +230,6 @@ function Dashboard() {
                 sx={{
                   textAlign: "center",
                   padding: "8px 16px",
-
                   borderTopRightRadius: 10,
                 }}
               >
@@ -224,7 +239,6 @@ function Dashboard() {
                 sx={{
                   textAlign: "center",
                   padding: "8px 16px",
-
                   borderTopRightRadius: 10,
                 }}
               >
