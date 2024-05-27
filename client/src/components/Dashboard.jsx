@@ -107,8 +107,8 @@ function Dashboard() {
   };
 
   const handleAddRecord = (newRecord) => {
-    console.log(newRecord);
     setRecords((prevRecords) => [...prevRecords, newRecord]);
+    fetchRecords(domainId).then((data) => setRecords(data));
   };
 
   const handleMenuClick = (event) => {
