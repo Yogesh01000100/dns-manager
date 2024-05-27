@@ -18,7 +18,7 @@ import {
   DialogContent,
   DialogTitle,
   TextField,
-  CircularProgress
+  CircularProgress,
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -108,47 +108,11 @@ function WDomains() {
                   <TableCell align="center">
                     <Skeleton variant="text" width="50%" />
                   </TableCell>
-                   <TableCell align="right" colSpan={2}>
+                  <TableCell align="center">
                     <Box display="flex" justifyContent="flex-end" gap={2}>
                       <Skeleton variant="rectangular" width={100} height={32} />
                       <Skeleton variant="rectangular" width={100} height={32} />
                     </Box>
-                  </TableCell>
-                  <TableCell align="center">
-                    {isMobile ? (
-                      <Box>
-                        <IconButton
-                          onClick={() => handleSelectDomain(zone.Id)}
-                          color="primary"
-                        >
-                          <EditIcon />
-                        </IconButton>
-                        <IconButton
-                          onClick={() => handleDeleteDomain(zone.Id)}
-                          color="error"
-                        >
-                          <DeleteIcon />
-                        </IconButton>
-                      </Box>
-                    ) : (
-                      <Box>
-                        <Button
-                          variant="contained"
-                          color="primary"
-                          onClick={() => handleSelectDomain(zone.Id)}
-                          sx={{ marginRight: 2 }}
-                        >
-                          Manage
-                        </Button>
-                        <Button
-                          variant="outlined"
-                          color="error"
-                          onClick={() => handleDeleteDomain(zone.Id)}
-                        >
-                          Delete
-                        </Button>
-                      </Box>
-                    )}
                   </TableCell>
                 </TableRow>
               ))
@@ -258,7 +222,7 @@ function WDomains() {
         </DialogActions>
       </Dialog>
       {isProcessing && (
-        <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
+        <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
           <CircularProgress />
         </Box>
       )}
