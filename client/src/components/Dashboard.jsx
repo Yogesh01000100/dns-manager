@@ -159,7 +159,7 @@ function Dashboard() {
     : records;
 
   return (
-    <Box sx={{ p: 4 }}>
+    <Box sx={{ px: 10, pt: 5 }}>
       {error && (
         <Typography color="error">
           An error occurred: {error.message}
@@ -322,33 +322,41 @@ function Dashboard() {
                     ))}
                   </TableCell>
                   <TableCell sx={{ textAlign: "center" }}>
-                    <Button
-                      startIcon={<EditIcon />}
-                      onClick={() => handleEditClick(record)}
-                      sx={{
-                        fontSize: {
-                          xs: "0rem",
-                          sm: "0rem",
-                          md: "0.875rem",
-                        },
-                      }}
+                    <Box
+                      display="flex"
+                      flexDirection={{ xs: "column", sm: "row" }}
+                      justifyContent="center"
+                      alignItems="center"
+                      gap={1}
                     >
-                      Edit
-                    </Button>
-                    <Button
-                      startIcon={<DeleteIcon />}
-                      color="error"
-                      onClick={() => handleOpenDeleteDialog(record)}
-                      sx={{
-                        fontSize: {
-                          xs: "0rem",
-                          sm: "0rem",
-                          md: "0.875rem",
-                        },
-                      }}
-                    >
-                      Delete
-                    </Button>
+                      <Button
+                        startIcon={<EditIcon />}
+                        onClick={() => handleEditClick(record)}
+                        sx={{
+                          fontSize: {
+                            xs: "0.7rem",
+                            sm: "0.8rem",
+                            md: "0.9rem",
+                          },
+                        }}
+                      >
+                        Edit
+                      </Button>
+                      <Button
+                        startIcon={<DeleteIcon />}
+                        color="error"
+                        onClick={() => handleOpenDeleteDialog(record)}
+                        sx={{
+                          fontSize: {
+                            xs: "0.7rem",
+                            sm: "0.8rem",
+                            md: "0.9rem",
+                          },
+                        }}
+                      >
+                        Delete
+                      </Button>
+                    </Box>
                   </TableCell>
                 </TableRow>
               ))

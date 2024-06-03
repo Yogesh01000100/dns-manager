@@ -79,7 +79,7 @@ function WDomains() {
   };
 
   return (
-    <Box sx={{ margin: 4, minWidth: 330 }}>
+    <Box sx={{ margin: 3, minWidth: 330, px: { xs: 0, sm: 1, md: 6 } }}>
       <DomainCard onOpen={handleOpen} />
       <TableContainer component={Paper}>
         <Table aria-label="simple table">
@@ -123,9 +123,27 @@ function WDomains() {
             ) : (
               hostedZones.map((zone) => (
                 <TableRow key={zone.Id}>
-                  <TableCell>{zone.Name}</TableCell>
-                  <TableCell align="center">{zone.Id}</TableCell>
-                  <TableCell align="center">
+                  <TableCell
+                    sx={{
+                      fontSize: { xs: "0.7rem", sm: "0.8rem", md: "0.9rem" },
+                    }}
+                  >
+                    {zone.Name}
+                  </TableCell>
+                  <TableCell
+                    align="center"
+                    sx={{
+                      fontSize: { xs: "0.7rem", sm: "0.8rem", md: "0.9rem" },
+                    }}
+                  >
+                    {zone.Id}
+                  </TableCell>
+                  <TableCell
+                    align="center"
+                    sx={{
+                      fontSize: { xs: "0.7rem", sm: "0.8rem", md: "0.9rem" },
+                    }}
+                  >
                     {zone.ResourceRecordSetCount}
                   </TableCell>
                   <TableCell align="center">

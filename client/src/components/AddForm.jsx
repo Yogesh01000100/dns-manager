@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { TextField, MenuItem, Button, Box } from "@mui/material";
+import { TextField, MenuItem, Button, Box, CircularProgress } from "@mui/material";
 import { createRecord } from "../services/user.js";
 
 const recordTypes = [
@@ -17,6 +17,7 @@ export default function AddForm({ zoneId, onAddRecord }) {
     value: "",
     ttl: "",
   });
+  const [isAdding, setIsAdding] = useState(false); 
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -25,6 +26,7 @@ export default function AddForm({ zoneId, onAddRecord }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsAdding(true);
     const { type, name, value, ttl } = record;
     const newRecord = {
       name,
@@ -34,16 +36,21 @@ export default function AddForm({ zoneId, onAddRecord }) {
       zoneId,
     };
 
-    const success = await createRecord(newRecord);
-    if (success) {
-      onAddRecord({
-        Type: newRecord.type,
-        Name: newRecord.name,
-        TTL: newRecord.ttl,
-        ResourceRecords: [{ value: newRecord.value }],
-      });
-      setRecord({ type: "A", name: "", value: "", ttl: "" });
+    try {
+      const success = await createRecord(newRecord);
+      if (success) {
+        onAddRecord({
+          Type: newRecord.type,
+          Name: newRecord.name,
+          TTL: newRecord.ttl,
+          ResourceRecords: [{ value: newRecord.value }],
+        });
+        setRecord({ type: "A", name: "", value: "", ttl: "" });
+      }
+    } catch (error) {
+      console.error('Error adding record:', error);
     }
+    setIsAdding(false); 
   };
 
   return (
@@ -51,11 +58,8 @@ export default function AddForm({ zoneId, onAddRecord }) {
       component="form"
       sx={{
         display: "flex",
-        flexDirection: { xs: "column", sm: "row" },
-        justifyContent: "center",
-        alignItems: "center",
+        flexDirection: "column",
         gap: 2,
-        flexWrap: "wrap",
         m: 2,
         minWidth: 200,
       }}
@@ -63,60 +67,76 @@ export default function AddForm({ zoneId, onAddRecord }) {
       noValidate
       autoComplete="on"
     >
-      <TextField
-        select
-        name="type"
-        label="Type"
-        value={record.type}
-        onChange={handleChange}
-        variant="outlined"
-        size="small"
-        sx={{ width: { xs: "100%", sm: "auto" }, flexGrow: 1 }}
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: { xs: "column", sm: "row" },
+          justifyContent: "center",
+          alignItems: "center",
+          gap: 2,
+          flexWrap: "wrap",
+        }}
       >
-        {recordTypes.map((option) => (
-          <MenuItem key={option.value} value={option.value}>
-            {option.label}
-          </MenuItem>
-        ))}
-      </TextField>
-      <TextField
-        name="name"
-        label="Name"
-        placeholder="@"
-        value={record.name}
-        onChange={handleChange}
-        variant="outlined"
-        size="small"
-        sx={{ width: { xs: "100%", sm: "auto" }, flexGrow: 1 }}
-      />
-      <TextField
-        name="value"
-        label="Target"
-        placeholder="Points to"
-        value={record.value}
-        onChange={handleChange}
-        variant="outlined"
-        size="small"
-        sx={{ width: { xs: "100%", sm: "auto" }, flexGrow: 1 }}
-      />
-      <TextField
-        name="ttl"
-        label="TTL"
-        placeholder="14400"
-        type="number"
-        value={record.ttl}
-        onChange={handleChange}
-        variant="outlined"
-        size="small"
-        sx={{ width: { xs: "100%", sm: "auto" }, flexGrow: 1 }}
-      />
+        <TextField
+          select
+          name="type"
+          label="Type"
+          value={record.type}
+          onChange={handleChange}
+          variant="outlined"
+          size="small"
+          sx={{ width: { xs: "100%", sm: "auto" }, flexGrow: 1 }}
+        >
+          {recordTypes.map((option) => (
+            <MenuItem key={option.value} value={option.value}>
+              {option.label}
+            </MenuItem>
+          ))}
+        </TextField>
+        <TextField
+          name="name"
+          label="Name"
+          placeholder="@"
+          value={record.name}
+          onChange={handleChange}
+          variant="outlined"
+          size="small"
+          sx={{ width: { xs: "100%", sm: "auto" }, flexGrow: 1 }}
+        />
+        <TextField
+          name="value"
+          label="Target"
+          placeholder="Points to"
+          value={record.value}
+          onChange={handleChange}
+          variant="outlined"
+          size="small"
+          sx={{ width: { xs: "100%", sm: "auto" }, flexGrow: 1 }}
+        />
+        <TextField
+          name="ttl"
+          label="TTL"
+          placeholder="14400"
+          type="number"
+          value={record.ttl}
+          onChange={handleChange}
+          variant="outlined"
+          size="small"
+          sx={{ width: { xs: "100%", sm: "150px" }, flexGrow: 0 }}
+        />
+      </Box>
       <Button
         type="submit"
         variant="contained"
         color="primary"
-        sx={{ width: { xs: "100%", sm: "auto" }, mt: { xs: 2, sm: 0 } }}
+        disabled={isAdding}
+        sx={{
+          width: { xs: "100%", sm: "auto" },
+          mt: 2,
+          alignSelf: "center",
+        }}
       >
-        Add Record
+        {isAdding ? <CircularProgress size={24} /> : "Add Record"}
       </Button>
     </Box>
   );
