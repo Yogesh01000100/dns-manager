@@ -2,7 +2,7 @@ import { route53 } from "../config/aws-config.js";
 import { HostedZone } from "../models/HostedZone.js";
 import { DnsRecord } from "../models/DnsRecord.js";
 
-// adds the domain to route53 service
+// adds the domain to route53
 export const createDomain = async (req, res) => {
   const { domainName } = req.body;
   const params = {
